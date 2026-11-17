@@ -4,9 +4,9 @@
   "active": false,
   "activeVersionId": null,
   "createdAt": "2026-11-17T16:27:59.008Z",
-  "updatedAt": "2026-11-17T19:02:50.979Z",
+  "updatedAt": "2026-11-17T20:00:16.953Z",
   "isArchived": false,
-  "versionId": "349f5552-79ab-42a4-8fb2-b5693bdbe5a9",
+  "versionId": "79b6b566-70eb-4ae5-8590-66b8b52c24fe",
   "triggerCount": 0,
   "nodes": [
     {
@@ -44,7 +44,7 @@
     },
     {
       "parameters": {
-        "jsCode": "\nconst response = $input.first().json;\n\nconst workflows = response.data;\n\nreturn workflows.map(workflow => {\n  const safeName = workflow.name\n    .toLowerCase()\n    .replace(/[^a-z0-9]+/g, '-')\n    .replace(/^-|-$/g, '');\n\n  return {\n    json: {\n      workflowId: workflow.id,\n      workflowName: workflow.name,\n      fileName: `D:/AI-Automation/n8n-Workflows/${safeName}.json`,\n      fileContent: JSON.stringify(workflow, null, 2)\n    }\n  };\n});\n"
+        "jsCode": "\nconst response = $input.first().json;\nconst workflows = response.data;\n\nreturn workflows.map(workflow => {\n  const safeName = workflow.name\n    .toLowerCase()\n    .replace(/^project\\s+/, '')\n    .replace(/[^a-z0-9]+/g, '-')\n    .replace(/^-|-$/g, '');\n\n  return {\n    json: {\n      workflowId: workflow.id,\n      workflowName: workflow.name,\n      folderPath: `D:/AI-Automation/n8n-Workflows/${safeName}`,\n      fileName: `D:/AI-Automation/n8n-Workflows/${safeName}/workflow.json`,\n      fileContent: JSON.stringify(workflow, null, 2)\n    }\n  };\n});\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -64,8 +64,8 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.2,
       "position": [
-        112,
-        -208
+        224,
+        -288
       ],
       "id": "3d349d6d-7cc6-4962-beb3-864d92c8a76f",
       "name": "Convert to File"
@@ -80,8 +80,8 @@
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1.1,
       "position": [
-        336,
-        -208
+        752,
+        -192
       ],
       "id": "5950ac47-21dd-4a53-baa4-1a7e73c7b612",
       "name": "Read/Write Files from Disk"
@@ -93,11 +93,40 @@
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
-        576,
-        -224
+        944,
+        -192
       ],
       "id": "cea90eff-61b8-42c6-8d79-5a1e19d80c6d",
       "name": "Execute Command"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=powershell -NoProfile -Command \"New-Item -ItemType Directory -Force -Path '{{ $('Code in JavaScript').item.json.folderPath }}' | Out-Null\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        240,
+        -48
+      ],
+      "id": "e39eb86a-8e2d-4b89-8ba2-ee79b6edd273",
+      "name": "Execute Command1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        496,
+        -176
+      ],
+      "id": "72c8d3c2-087b-4500-879b-d963b3402efb",
+      "name": "Merge"
     }
   ],
   "connections": {
@@ -130,6 +159,11 @@
             "node": "Convert to File",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Execute Command1",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -138,7 +172,7 @@
       "main": [
         [
           {
-            "node": "Read/Write Files from Disk",
+            "node": "Merge",
             "type": "main",
             "index": 0
           }
@@ -150,6 +184,28 @@
         [
           {
             "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
             "type": "main",
             "index": 0
           }
