@@ -4,9 +4,9 @@
   "active": false,
   "activeVersionId": null,
   "createdAt": "2026-11-17T12:26:51.490Z",
-  "updatedAt": "2026-11-17T19:12:48.544Z",
+  "updatedAt": "2026-11-18T15:54:44.975Z",
   "isArchived": false,
-  "versionId": "6928a9e1-0d05-4366-973c-2880eb6279c0",
+  "versionId": "2a2351df-f54b-44d6-96fd-cce7bb3ee425",
   "triggerCount": 1,
   "nodes": [
     {
@@ -26,7 +26,7 @@
     {
       "parameters": {
         "options": {
-          "systemMessage": "Please respond politely and explain things clearly."
+          "systemMessage": "Please respond politely like a friend of mine."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
