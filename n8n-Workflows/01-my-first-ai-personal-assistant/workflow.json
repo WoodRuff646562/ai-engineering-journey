@@ -1,0 +1,106 @@
+{
+  "id": "o99s2bSsLBD3O6uk",
+  "name": "01 - My First AI Personal Assistant",
+  "active": false,
+  "activeVersionId": null,
+  "createdAt": "2026-11-17T12:26:51.490Z",
+  "updatedAt": "2026-11-18T15:54:44.975Z",
+  "isArchived": false,
+  "versionId": "2a2351df-f54b-44d6-96fd-cce7bb3ee425",
+  "triggerCount": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -240,
+        -128
+      ],
+      "id": "8f462131-5e0f-4a58-91eb-6d5bc4d8ca93",
+      "name": "When chat message received",
+      "webhookId": "039381d1-a348-4c0b-98ff-3dfb457e9773"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Please respond politely like a friend of mine."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -32,
+        -128
+      ],
+      "id": "6b76064a-cbb9-4282-ae9e-16a4142f9ee4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        80
+      ],
+      "id": "0ceb794b-d0a0-4435-ba26-b480f8b4eacc",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "8QWZXzbwZnKscsEh",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodeGroups": [],
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [],
+  "shared": [
+    {
+      "role": "workflow:owner",
+      "workflowId": "o99s2bSsLBD3O6uk",
+      "projectId": "aIl8yaG9zyqNYAei",
+      "createdAt": "2026-11-17T12:26:51.497Z",
+      "updatedAt": "2026-11-17T12:26:51.497Z"
+    }
+  ],
+  "activeVersion": null
+}

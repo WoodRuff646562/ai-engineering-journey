@@ -1,0 +1,235 @@
+{
+  "id": "mg2DMud6N3iNV0HD",
+  "name": "Project 02 - Automatic GitHub Backup",
+  "active": false,
+  "activeVersionId": null,
+  "createdAt": "2026-11-17T16:27:59.008Z",
+  "updatedAt": "2026-11-17T20:00:16.953Z",
+  "isArchived": false,
+  "versionId": "79b6b566-70eb-4ae5-8590-66b8b52c24fe",
+  "triggerCount": 0,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -208
+      ],
+      "id": "c7ce768d-1c17-49e1-b1e9-b678a7a748a8",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:5678/api/v1/workflows",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -272,
+        -208
+      ],
+      "id": "eabf2a51-f4f1-4eaf-854b-47a9b4321573",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "37Y4OVy3H7eUVSp3",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst response = $input.first().json;\nconst workflows = response.data;\n\nreturn workflows.map(workflow => {\n  const safeName = workflow.name\n    .toLowerCase()\n    .replace(/^project\\s+/, '')\n    .replace(/[^a-z0-9]+/g, '-')\n    .replace(/^-|-$/g, '');\n\n  return {\n    json: {\n      workflowId: workflow.id,\n      workflowName: workflow.name,\n      folderPath: `D:/AI-Automation/n8n-Workflows/${safeName}`,\n      fileName: `D:/AI-Automation/n8n-Workflows/${safeName}/workflow.json`,\n      fileContent: JSON.stringify(workflow, null, 2)\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        -208
+      ],
+      "id": "1124b42a-cba8-4fb8-8e32-5ba693762c98",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "toText",
+        "sourceProperty": "fileContent",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        -288
+      ],
+      "id": "3d349d6d-7cc6-4962-beb3-864d92c8a76f",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "={{ $('Code in JavaScript').item.json.fileName }}",
+        "dataPropertyName": "=data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        752,
+        -192
+      ],
+      "id": "5950ac47-21dd-4a53-baa4-1a7e73c7b612",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"D:\\AI-Automation\\backup-git.ps1\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        944,
+        -192
+      ],
+      "id": "cea90eff-61b8-42c6-8d79-5a1e19d80c6d",
+      "name": "Execute Command"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=powershell -NoProfile -Command \"New-Item -ItemType Directory -Force -Path '{{ $('Code in JavaScript').item.json.folderPath }}' | Out-Null\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        240,
+        -48
+      ],
+      "id": "e39eb86a-8e2d-4b89-8ba2-ee79b6edd273",
+      "name": "Execute Command1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        496,
+        -176
+      ],
+      "id": "72c8d3c2-087b-4500-879b-d963b3402efb",
+      "name": "Merge"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Execute Command1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Execute Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodeGroups": [],
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "meta": null,
+  "tags": [],
+  "shared": [
+    {
+      "role": "workflow:owner",
+      "workflowId": "mg2DMud6N3iNV0HD",
+      "projectId": "aIl8yaG9zyqNYAei",
+      "createdAt": "2026-11-17T16:27:59.019Z",
+      "updatedAt": "2026-11-17T16:27:59.019Z"
+    }
+  ],
+  "activeVersion": null
+}
